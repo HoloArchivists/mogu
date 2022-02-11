@@ -59,9 +59,9 @@
 		<![endif]-->
 
 		{% if config.SITE_FLAVOR == 'nyaa' %}
-		<link rel="search" type="application/opensearchdescription+xml" title="Nyaa.si" href="/static/search.xml">
+		<link rel="search" type="application/opensearchdescription+xml" title="Mogu" href="/static/search.xml">
 		{% elif config.SITE_FLAVOR == 'sukebei' %}
-		<link rel="search" type="application/opensearchdescription+xml" title="Sukebei (Nyaa.si)" href="/static/search-sukebei.xml">
+		<link rel="search" type="application/opensearchdescription+xml" title="Yabe (Mogu)" href="/static/search-sukebei.xml">
 		{% endif %}
 	</head>
 	<body>
@@ -95,7 +95,7 @@
 						</li>
 						<li><a href="{% if rss_filter %}{{ url_for('main.home', page='rss', **rss_filter) }}{% else %}{{ url_for('main.home', page='rss') }}{% endif %}">RSS</a></li>
 						{% if config.SITE_FLAVOR == 'nyaa' %}
-						<li><a href="//{{ config.EXTERNAL_URLS['fap'] }}">Fap</a></li>
+						<li><a href="//{{ config.EXTERNAL_URLS['fap'] }}">Yabe</a></li>
 						{% elif config.SITE_FLAVOR == 'sukebei' %}
 						<li><a href="//{{ config.EXTERNAL_URLS['main'] }}">Fun</a></li>
 						{% endif %}

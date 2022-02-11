@@ -5,8 +5,8 @@ import re
 
 import requests
 
-NYAA_HOST = "https://nyaa.si"
-SUKEBEI_HOST = "https://sukebei.nyaa.si"
+NYAA_HOST = "https://mogu.holopirates.moe"
+SUKEBEI_HOST = "https://yabe.holopirates.moe"
 
 API_BASE = "/api"
 API_INFO = API_BASE + "/info"
