@@ -23,8 +23,9 @@ class LimitedPagination(Pagination):
 
 
 def fix_paginate():
-
-    def paginate_faste(self, page=1, per_page=50, max_page=None, step=5, count_query=None):
+    def paginate_faste(
+        self, page=1, per_page=50, max_page=None, step=5, count_query=None
+    ):
         if page < 1:
             abort(404)
 
@@ -46,8 +47,9 @@ def fix_paginate():
         if not items and page != 1:
             abort(404)
 
-        return LimitedPagination(actual_query_count, self, page, per_page, total_query_count,
-                                 items)
+        return LimitedPagination(
+            actual_query_count, self, page, per_page, total_query_count, items
+        )
 
     BaseQuery.paginate_faste = paginate_faste
 
@@ -56,9 +58,9 @@ def _get_config():
     # Workaround to get an available config object before the app is initiallized
     # Only needed/used in top-level and class statements
     # https://stackoverflow.com/a/18138250/7597273
-    root_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+    root_path = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
     config = Config(root_path)
-    config.from_object('config')
+    config.from_object("config")
     return config
 
 
