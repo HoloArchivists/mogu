@@ -275,6 +275,13 @@ def profile():
 
     if flask.request.method == "POST":
         if form.authorized_submit and form.validate():
+            # Disable email and password change
+            flask.flash(
+                flask.Markup("<strong>Updating email or password is disabled</strong>"),
+                "danger",
+            )
+            return flask.redirect("/profile")
+
             user = flask.g.user
             new_email = form.email.data.strip()
             new_password = form.new_password.data
