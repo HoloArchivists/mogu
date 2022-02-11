@@ -9,6 +9,7 @@ from werkzeug.urls import url_encode
 
 from nyaa.backend import get_category_id_map
 from nyaa.torrents import create_magnet
+from nyaa.discord import DiscordOAuth2
 
 app = flask.current_app
 bp = flask.Blueprint("template-utils", __name__)
@@ -26,15 +27,12 @@ def create_magnet_from_es_torrent():
 
 @bp.app_context_processor
 def create_discord_oauth_url():
-    base = "https://discord.com/api/oauth2/authorize"
-    query = {
-        "client_id": app.config["DISCORD_CLIENT_ID"],
-        "response_type": "code",
-        "scope": "identify guilds",
-        "redirect_uri": app.config["DISCORD_REDIRECT_URI"],
-    }
-
-    return dict(discord_oauth_url=f"{base}?{url_encode(query)}")
+    return dict(
+        discord_oauth_url=DiscordOAuth2(
+            client_id=app.config["DISCORD_CLIENT_ID"],
+            redirect_uri=app.config["DISCORD_REDIRECT_URI"],
+        ).get_authorize_url()
+    )
 
 
 # ######################### TEMPLATE GLOBALS #########################

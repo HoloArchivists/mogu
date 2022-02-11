@@ -127,6 +127,9 @@ TRACKER_API_AUTH = "topsecret"
 DISCORD_CLIENT_ID = "***"
 DISCORD_CLIENT_SECRET = "***"
 DISCORD_REDIRECT_URI = "http://localhost:5500/discord/oauth2/callback"
+DISCORD_GUILD = "***"  # Guild ID used for login verification
+DISCORD_ROLE_ADMIN = "***"  # Role ID for admin users
+DISCORD_ROLE_TRUSTED = "***"  # Role ID for trusted users
 
 #############
 ## Account ##
