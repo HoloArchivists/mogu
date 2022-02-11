@@ -1,6 +1,7 @@
 import json
 from ipaddress import ip_address
 from urllib.parse import quote
+from datetime import datetime
 
 import flask
 import requests
@@ -49,7 +50,9 @@ def discord_callback():
             "error.html", message="Failed to get user data", trace=response
         )
 
+    print(response)
     user_id = response["id"]
+    user_name = response["username"]
 
     # Get the user's guilds.
     response, status = discord.get_user_guilds()
@@ -78,13 +81,54 @@ def discord_callback():
         )
 
     user_roles = response["roles"]
-    role_admin = app.config["DISCORD_ROLE_ADMIN"]
+    role_login = app.config["DISCORD_ROLE_LOGIN"]
     role_trusted = app.config["DISCORD_ROLE_TRUSTED"]
+    role_moderator = app.config["DISCORD_ROLE_MODERATOR"]
+    role_admin = app.config["DISCORD_ROLE_ADMIN"]
 
-    # return json for debugging
-    return flask.jsonify(
-        discord_code=discord_code,
-        user_id=user_id,
-        guilds=user_guilds,
-        roles=user_roles,
-    )
+    # Make sure user has at least the login role.
+    if not role_login in user_roles:
+        return flask.render_template(
+            "error.html",
+            message="You do not have the sufficient permissions to login. Contact an admin for more info.",
+        )
+
+    ip = ip_address(flask.request.remote_addr).packed
+
+    # Check if the user exists in the database.
+    user = models.User.by_id(user_id)
+    if not user:
+        # Create the user.
+        user = models.User(
+            username=user_name, email="user@holopirates.moe", password=""
+        )
+        user.id = user_id
+        user.registration_ip = ip
+
+    # Update the user
+    user.last_login_ip = ip
+    user.last_login_date = datetime.utcnow()
+    user.status = models.UserStatusType.ACTIVE
+
+    if role_admin in user_roles:
+        user.level = models.UserLevelType.SUPERADMIN
+    elif role_moderator in user_roles:
+        user.level = models.UserLevelType.MODERATOR
+    elif role_trusted in user_roles:
+        user.level = models.UserLevelType.TRUSTED
+    else:
+        user.level = models.UserLevelType.REGULAR
+
+    db.session.add(user)
+    db.session.commit()
+
+    flask.g.user = user
+    flask.session["user_id"] = user.id
+    flask.session.permanent = True
+    flask.session.modified = True
+
+    print("Logged in as {}".format(user.username))
+    print(user)
+
+    #  Redirect the user to the index.
+    return flask.redirect(flask.url_for("main.home"))

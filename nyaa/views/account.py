@@ -25,6 +25,13 @@ bp = flask.Blueprint("account", __name__)
     error_message="You've tried logging in too many times, try again in an hour.",
 )
 def login():
+    # Disable this route because we already have discord login
+    flask.flash(
+        flask.Markup("<strong>Password authentication is disabled</strong>"),
+        "danger",
+    )
+    return flask.redirect(flask.url_for("main.home"))
+
     if flask.g.user:
         return flask.redirect(redirect_url())
 
@@ -114,6 +121,13 @@ def _check_for_multi_account(ip, cooldown):
 
 @bp.route("/register", methods=["GET", "POST"])
 def register():
+    # Disable this route because we already have discord login
+    flask.flash(
+        flask.Markup("<strong>Password authentication is disabled</strong>"),
+        "danger",
+    )
+    return flask.redirect(flask.url_for("main.home"))
+
     if flask.g.user:
         return flask.redirect(redirect_url())
 
@@ -186,6 +200,13 @@ def register():
 @bp.route("/password-reset/<payload>", methods=["GET", "POST"])
 @bp.route("/password-reset", methods=["GET", "POST"])
 def password_reset(payload=None):
+    # Disable this route because we already have discord login
+    flask.flash(
+        flask.Markup("<strong>Password authentication is disabled</strong>"),
+        "danger",
+    )
+    return flask.redirect(flask.url_for("main.home"))
+
     if not app.config["ALLOW_PASSWORD_RESET"]:
         return flask.abort(404)
 
@@ -313,6 +334,13 @@ def profile():
 
 @bp.route("/trusted/request", methods=["GET", "POST"])
 def request_trusted():
+    # Disable this route because we already have discord login
+    flask.flash(
+        flask.Markup("<strong>This feature is disabled</strong>"),
+        "danger",
+    )
+    return flask.redirect(flask.url_for("main.home"))
+
     if not flask.g.user:
         return flask.redirect(flask.url_for("account.login"))
     trusted_form = None
