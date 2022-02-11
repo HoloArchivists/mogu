@@ -1,0 +1,12 @@
+{% extends "layout.html" %}
+{% block title %}An error has occurred :: {{ config.SITE_NAME }}{% endblock %}
+{% block metatags %}
+<meta property="og:description" content="Nothing here.">
+{% endblock %}
+{% block body %}
+<h1>An error has occurred</h1>
+<p>{{ message | safe }}</p>
+{% if trace %}
+<pre>{{ trace }}</pre>
+{% endif %}
+{% endblock %}
