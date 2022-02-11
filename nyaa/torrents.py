@@ -113,7 +113,7 @@ def create_default_metadata_base(torrent, trackers=None, webseeds=None):
         webseeds = db_webseeds if webseeds is None else webseeds
 
     metadata_base = {
-        "created by": "NyaaV2",
+        "created by": "Mogu",
         "creation date": int(torrent.created_utc_timestamp),
         "comment": flask.url_for("torrents.view", torrent_id=torrent.id, _external=True)
         # 'encoding' : 'UTF-8' # It's almost always UTF-8 and expected, but if it isn't...
