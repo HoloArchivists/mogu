@@ -9,6 +9,7 @@ from werkzeug.urls import url_encode
 
 from nyaa.backend import get_category_id_map
 from nyaa.torrents import create_magnet
+from nyaa.discord import DiscordOAuth2
 
 app = flask.current_app
 bp = flask.Blueprint("template-utils", __name__)
@@ -22,6 +23,16 @@ _static_cache = {}  # For static_cachebuster
 def create_magnet_from_es_torrent():
     # Since ES entries look like ducks, we can use the create_magnet as-is
     return dict(create_magnet_from_es_torrent=create_magnet)
+
+
+@bp.app_context_processor
+def create_discord_oauth_url():
+    return dict(
+        discord_oauth_url=DiscordOAuth2(
+            client_id=app.config["DISCORD_CLIENT_ID"],
+            redirect_uri=app.config["DISCORD_REDIRECT_URI"],
+        ).get_authorize_url()
+    )
 
 
 # ######################### TEMPLATE GLOBALS #########################

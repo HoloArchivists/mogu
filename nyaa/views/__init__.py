@@ -7,6 +7,7 @@ from nyaa.views import (  # isort:skip
     site,
     torrents,
     users,
+    oauth2,
 )
 
 
@@ -47,3 +48,4 @@ def register_views(flask_app):
     flask_app.register_blueprint(site.bp)
     flask_app.register_blueprint(torrents.bp)
     flask_app.register_blueprint(users.bp)
+    flask_app.register_blueprint(oauth2.bp)
