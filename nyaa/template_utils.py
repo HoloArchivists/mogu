@@ -24,6 +24,19 @@ def create_magnet_from_es_torrent():
     return dict(create_magnet_from_es_torrent=create_magnet)
 
 
+@bp.app_context_processor
+def create_discord_oauth_url():
+    base = "https://discord.com/api/oauth2/authorize"
+    query = {
+        "client_id": app.config["DISCORD_CLIENT_ID"],
+        "response_type": "code",
+        "scope": "identify guilds",
+        "redirect_uri": app.config["DISCORD_REDIRECT_URI"],
+    }
+
+    return dict(discord_oauth_url=f"{base}?{url_encode(query)}")
+
+
 # ######################### TEMPLATE GLOBALS #########################
 
 flask_url_for = flask.url_for

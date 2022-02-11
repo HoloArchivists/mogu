@@ -121,6 +121,14 @@ TRACKER_API_URL = "http://127.0.0.1:6881/api"
 TRACKER_API_AUTH = "topsecret"
 
 #############
+## Discord ##
+#############
+
+DISCORD_CLIENT_ID = "***"
+DISCORD_CLIENT_SECRET = "***"
+DISCORD_REDIRECT_URI = "http://localhost:5500/discord/oauth2/callback"
+
+#############
 ## Account ##
 #############
 
