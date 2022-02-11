@@ -17,12 +17,14 @@ from elasticsearch import helpers
 from nyaa import create_app, models
 from nyaa.extensions import db
 
-app = create_app('config')
-es = Elasticsearch(hosts=app.config['ES_HOSTS'], timeout=30)
+app = create_app("config")
+es = Elasticsearch(hosts=app.config["ES_HOSTS"], timeout=30)
 ic = IndicesClient(es)
 
+
 def pad_bytes(in_bytes, size):
-    return in_bytes + (b'\x00' * max(0, size - len(in_bytes)))
+    return in_bytes + (b"\x00" * max(0, size - len(in_bytes)))
+
 
 # turn into thing that elasticsearch indexes. We flatten in
 # the stats (seeders/leechers) so we can order by them in es naturally.
@@ -65,8 +67,9 @@ def mk_es(t, index_name):
             "download_count": t.stats.download_count,
             "leech_count": t.stats.leech_count,
             "seed_count": t.stats.seed_count,
-        }
+        },
     }
+
 
 # page through an sqlalchemy query, like the per_fetch but
 # doesn't break the eager joins its doing against the stats table.
@@ -84,50 +87,58 @@ def page_query(query, limit=sys.maxsize, batch_size=10000, progress_bar=None):
         had_things = False
         for thing in things:
             had_things = True
-            yield(thing)
+            yield (thing)
         if not had_things or stop == limit:
             break
         if progress_bar:
             progress_bar.update(start)
         start = min(limit, start + batch_size)
 
-FLAVORS = [
-    ('nyaa', models.NyaaTorrent),
-    ('sukebei', models.SukebeiTorrent)
-]
+
+FLAVORS = [("nyaa", models.NyaaTorrent), ("sukebei", models.SukebeiTorrent)]
 
 # Get binlog status from mysql
 with app.app_context():
-    master_status = db.engine.execute('SHOW MASTER STATUS;').fetchone()
+    master_status = db.engine.execute("SHOW MASTER STATUS;").fetchone()
 
-    position_json = {
-        'log_file': master_status[0],
-        'log_pos': master_status[1]
-    }
+    position_json = {"log_file": master_status[0], "log_pos": master_status[1]}
 
-    print('Save the following in the file configured in your ES sync config JSON:')
+    print("Save the following in the file configured in your ES sync config JSON:")
     print(json.dumps(position_json))
 
     for flavor, torrent_class in FLAVORS:
-        print('Importing torrents for index', flavor, 'from', torrent_class)
+        print("Importing torrents for index", flavor, "from", torrent_class)
         bar = progressbar.ProgressBar(
             maxval=torrent_class.query.count(),
-            widgets=[ progressbar.SimpleProgress(),
-                      ' [', progressbar.Timer(), '] ',
-                      progressbar.Bar(),
-                      ' (', progressbar.ETA(), ') ',
-                ])
+            widgets=[
+                progressbar.SimpleProgress(),
+                " [",
+                progressbar.Timer(),
+                "] ",
+                progressbar.Bar(),
+                " (",
+                progressbar.ETA(),
+                ") ",
+            ],
+        )
 
         # turn off refreshes while bulk loading
-        ic.put_settings(body={'index': {'refresh_interval': '-1'}}, index=flavor)
+        ic.put_settings(body={"index": {"refresh_interval": "-1"}}, index=flavor)
 
         bar.start()
-        helpers.bulk(es, (mk_es(t, flavor) for t in page_query(torrent_class.query, progress_bar=bar)), chunk_size=10000)
+        helpers.bulk(
+            es,
+            (
+                mk_es(t, flavor)
+                for t in page_query(torrent_class.query, progress_bar=bar)
+            ),
+            chunk_size=10000,
+        )
         bar.finish()
 
         # Refresh the index immideately
         ic.refresh(index=flavor)
-        print('Index refresh done.')
+        print("Index refresh done.")
 
         # restore to near-enough real time
-        ic.put_settings(body={'index': {'refresh_interval': '30s'}}, index=flavor)
+        ic.put_settings(body={"index": {"refresh_interval": "30s"}}, index=flavor)

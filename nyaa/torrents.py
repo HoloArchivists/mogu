@@ -17,16 +17,16 @@ def read_trackers_from_file(file_object):
 
     for line in file_object:
         line = line.strip()
-        if line and not line.startswith('#'):
+        if line and not line.startswith("#"):
             USED_TRACKERS.add(line)
     return USED_TRACKERS
 
 
 def read_trackers():
-    tracker_list_file = os.path.join(app.config['BASE_DIR'], 'trackers.txt')
+    tracker_list_file = os.path.join(app.config["BASE_DIR"], "trackers.txt")
 
     if os.path.exists(tracker_list_file):
-        with open(tracker_list_file, 'r') as in_file:
+        with open(tracker_list_file, "r") as in_file:
             return read_trackers_from_file(in_file)
 
 
@@ -41,7 +41,7 @@ def get_trackers_and_webseeds(torrent):
     webseeds = OrderedSet()
 
     # Our main one first
-    main_announce_url = app.config.get('MAIN_ANNOUNCE_URL')
+    main_announce_url = app.config.get("MAIN_ANNOUNCE_URL")
     if main_announce_url:
         trackers.add(main_announce_url)
 
@@ -66,7 +66,7 @@ def get_default_trackers():
     trackers = OrderedSet()
 
     # Our main one first
-    main_announce_url = app.config.get('MAIN_ANNOUNCE_URL')
+    main_announce_url = app.config.get("MAIN_ANNOUNCE_URL")
     if main_announce_url:
         trackers.add(main_announce_url)
 
@@ -76,24 +76,23 @@ def get_default_trackers():
     return list(trackers)
 
 
-@functools.lru_cache(maxsize=1024*4)
+@functools.lru_cache(maxsize=1024 * 4)
 def _create_magnet(display_name, info_hash, max_trackers=5, trackers=None):
     # Unless specified, we just use default trackers
     if trackers is None:
         trackers = get_default_trackers()
 
-    magnet_parts = [
-        ('dn', display_name)
-    ]
-    magnet_parts.extend(
-        ('tr', tracker_url)
-        for tracker_url in trackers[:max_trackers]
-    )
+    magnet_parts = [("dn", display_name)]
+    magnet_parts.extend(("tr", tracker_url) for tracker_url in trackers[:max_trackers])
 
-    return ''.join([
-        'magnet:?xt=urn:btih:', info_hash,
-        '&', urlencode(magnet_parts, quote_via=quote)
-    ])
+    return "".join(
+        [
+            "magnet:?xt=urn:btih:",
+            info_hash,
+            "&",
+            urlencode(magnet_parts, quote_via=quote),
+        ]
+    )
 
 
 def create_magnet(torrent):
@@ -114,44 +113,42 @@ def create_default_metadata_base(torrent, trackers=None, webseeds=None):
         webseeds = db_webseeds if webseeds is None else webseeds
 
     metadata_base = {
-        'created by': 'NyaaV2',
-        'creation date': int(torrent.created_utc_timestamp),
-        'comment': flask.url_for('torrents.view',
-                                 torrent_id=torrent.id,
-                                 _external=True)
+        "created by": "NyaaV2",
+        "creation date": int(torrent.created_utc_timestamp),
+        "comment": flask.url_for("torrents.view", torrent_id=torrent.id, _external=True)
         # 'encoding' : 'UTF-8' # It's almost always UTF-8 and expected, but if it isn't...
     }
 
     if len(trackers) > 0:
-        metadata_base['announce'] = trackers[0]
+        metadata_base["announce"] = trackers[0]
     if len(trackers) > 1:
         # Yes, it's a list of lists with a single element inside.
-        metadata_base['announce-list'] = [[tracker] for tracker in trackers]
+        metadata_base["announce-list"] = [[tracker] for tracker in trackers]
 
     # Add webseeds
     if webseeds:
-        metadata_base['url-list'] = webseeds
+        metadata_base["url-list"] = webseeds
 
     return metadata_base
 
 
 def create_bencoded_torrent(torrent, bencoded_info, metadata_base=None):
-    ''' Creates a bencoded torrent metadata for a given torrent,
-        optionally using a given metadata_base dict (note: 'info' key will be
-        popped off the dict) '''
+    """Creates a bencoded torrent metadata for a given torrent,
+    optionally using a given metadata_base dict (note: 'info' key will be
+    popped off the dict)"""
     if metadata_base is None:
         metadata_base = create_default_metadata_base(torrent)
 
-    metadata_base['encoding'] = torrent.encoding
+    metadata_base["encoding"] = torrent.encoding
 
     # Make sure info doesn't exist on the base
-    metadata_base.pop('info', None)
-    prefixed_dict = {key: metadata_base[key] for key in metadata_base if key < 'info'}
-    suffixed_dict = {key: metadata_base[key] for key in metadata_base if key > 'info'}
+    metadata_base.pop("info", None)
+    prefixed_dict = {key: metadata_base[key] for key in metadata_base if key < "info"}
+    suffixed_dict = {key: metadata_base[key] for key in metadata_base if key > "info"}
 
     prefix = bencode.encode(prefixed_dict)
     suffix = bencode.encode(suffixed_dict)
 
-    bencoded_torrent = prefix[:-1] + b'4:info' + bencoded_info + suffix[1:]
+    bencoded_torrent = prefix[:-1] + b"4:info" + bencoded_info + suffix[1:]
 
     return bencoded_torrent

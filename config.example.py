@@ -10,37 +10,37 @@ DEBUG = True
 # A read-only maintenance mode, in which the database is not modified
 MAINTENANCE_MODE = False
 # A maintenance message (used in layout.html template)
-MAINTENANCE_MODE_MESSAGE = 'Site is currently in read-only maintenance mode.'
+MAINTENANCE_MODE_MESSAGE = "Site is currently in read-only maintenance mode."
 # Allow logging in during maintenance (without updating last login date)
 MAINTENANCE_MODE_LOGINS = True
 
 # Block *anonymous* uploads completely
 RAID_MODE_LIMIT_UPLOADS = False
 # Message prepended to the full error message (account.py)
-RAID_MODE_UPLOADS_MESSAGE = 'Anonymous uploads are currently disabled.'
+RAID_MODE_UPLOADS_MESSAGE = "Anonymous uploads are currently disabled."
 
 # Require manual activation for newly registered accounts
 RAID_MODE_LIMIT_REGISTER = False
 # Message prepended to the full error message (account.py)
-RAID_MODE_REGISTER_MESSAGE = 'Registration is currently being limited.'
+RAID_MODE_REGISTER_MESSAGE = "Registration is currently being limited."
 
 #############
 ## General ##
 #############
 
 # What the site identifies itself as. This affects templates, not database stuff.
-SITE_NAME = 'Nyaa'
+SITE_NAME = "Nyaa"
 # What the both sites are labeled under (used for eg. email subjects)
-GLOBAL_SITE_NAME = 'Nyaa.si'
+GLOBAL_SITE_NAME = "Nyaa.si"
 
 # General prefix for running multiple sites, eg. most database tables are site-prefixed
-SITE_FLAVOR = 'nyaa' # 'nyaa' or 'sukebei'
+SITE_FLAVOR = "nyaa"  # 'nyaa' or 'sukebei'
 # Full external urls to both sites, used for site-change links
-EXTERNAL_URLS = {'fap':'***', 'main':'***'}
+EXTERNAL_URLS = {"fap": "***", "main": "***"}
 
 # Secret keys for Flask
-CSRF_SESSION_KEY = '***'
-SECRET_KEY = '***'
+CSRF_SESSION_KEY = "***"
+SECRET_KEY = "***"
 
 # Present a recaptcha for anonymous uploaders
 USE_RECAPTCHA = False
@@ -63,10 +63,12 @@ EMAIL_BLACKLIST = (
     # Hotmail completely rejects "untrusted" emails,
     # so it's less of a headache to blacklist them as users can't receive the mails anyway.
     # (Hopefully) complete list of Microsoft email domains follows:
-    re.compile(r'(?i)@hotmail\.(co|co\.uk|com|de|dk|eu|fr|it|net|org|se)'),
-    re.compile(r'(?i)@live\.(co|co.uk|com|de|dk|eu|fr|it|net|org|se|no)'),
-    re.compile(r'(?i)@outlook\.(at|be|cl|co|co\.(id|il|nz|th)|com|com\.(ar|au|au|br|gr|pe|tr|vn)|cz|de|de|dk|dk|es|eu|fr|fr|hu|ie|in|it|it|jp|kr|lv|my|org|ph|pt|sa|se|sg|sk)'),
-    re.compile(r'(?i)@(msn\.com|passport\.(com|net))'),
+    re.compile(r"(?i)@hotmail\.(co|co\.uk|com|de|dk|eu|fr|it|net|org|se)"),
+    re.compile(r"(?i)@live\.(co|co.uk|com|de|dk|eu|fr|it|net|org|se|no)"),
+    re.compile(
+        r"(?i)@outlook\.(at|be|cl|co|co\.(id|il|nz|th)|com|com\.(ar|au|au|br|gr|pe|tr|vn)|cz|de|de|dk|dk|es|eu|fr|fr|hu|ie|in|it|it|jp|kr|lv|my|org|ph|pt|sa|se|sg|sk)"
+    ),
+    re.compile(r"(?i)@(msn\.com|passport\.(com|net))"),
     # '@dodgydomain.tk'
 )
 EMAIL_SERVER_BLACKLIST = (
@@ -75,35 +77,35 @@ EMAIL_SERVER_BLACKLIST = (
 )
 
 
-
 # Recaptcha keys (https://www.google.com/recaptcha)
-RECAPTCHA_PUBLIC_KEY = '***'
-RECAPTCHA_PRIVATE_KEY = '***'
+RECAPTCHA_PUBLIC_KEY = "***"
+RECAPTCHA_PRIVATE_KEY = "***"
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 if USE_MYSQL:
-    SQLALCHEMY_DATABASE_URI = ('mysql://test:test123@localhost/nyaav2?charset=utf8mb4')
+    SQLALCHEMY_DATABASE_URI = "mysql://test:test123@localhost/nyaav2?charset=utf8mb4"
 else:
     SQLALCHEMY_DATABASE_URI = (
-        'sqlite:///' + os.path.join(BASE_DIR, 'test.db') + '?check_same_thread=False')
+        "sqlite:///" + os.path.join(BASE_DIR, "test.db") + "?check_same_thread=False"
+    )
 
 ###########
 ## EMAIL ##
 ###########
 
 # 'smtp' or 'mailgun'
-MAIL_BACKEND = 'mailgun'
-MAIL_FROM_ADDRESS = 'Sender Name <sender@domain.com>'
+MAIL_BACKEND = "mailgun"
+MAIL_FROM_ADDRESS = "Sender Name <sender@domain.com>"
 
 # Mailgun settings
-MAILGUN_API_BASE = 'https://api.mailgun.net/v3/YOUR_DOMAIN_NAME'
-MAILGUN_API_KEY = 'YOUR_API_KEY'
+MAILGUN_API_BASE = "https://api.mailgun.net/v3/YOUR_DOMAIN_NAME"
+MAILGUN_API_KEY = "YOUR_API_KEY"
 
 # SMTP settings
-SMTP_SERVER = '***'
+SMTP_SERVER = "***"
 SMTP_PORT = 587
-SMTP_USERNAME = '***'
-SMTP_PASSWORD = '***'
+SMTP_USERNAME = "***"
+SMTP_PASSWORD = "***"
 
 
 # The maximum number of files a torrent can contain
@@ -112,11 +114,11 @@ MAX_FILES_VIEW = 1000
 
 # Verify uploaded torrents have the given tracker in them?
 ENFORCE_MAIN_ANNOUNCE_URL = False
-MAIN_ANNOUNCE_URL = 'http://127.0.0.1:6881/announce'
+MAIN_ANNOUNCE_URL = "http://127.0.0.1:6881/announce"
 
 # Tracker API integration - don't mind this
-TRACKER_API_URL = 'http://127.0.0.1:6881/api'
-TRACKER_API_AUTH = 'topsecret'
+TRACKER_API_URL = "http://127.0.0.1:6881/api"
+TRACKER_API_AUTH = "topsecret"
 
 #############
 ## Account ##
@@ -144,7 +146,7 @@ ACCOUNT_RECAPTCHA_AGE = 7 * 24 * 3600  # A week
 PER_IP_ACCOUNT_COOLDOWN = 24 * 3600
 
 # Backup original .torrent uploads
-BACKUP_TORRENT_FOLDER = 'torrents'
+BACKUP_TORRENT_FOLDER = "torrents"
 
 ############
 ## Search ##
@@ -174,7 +176,7 @@ ES_MAX_SEARCH_RESULT = 1000
 # ES index name generally (nyaa or sukebei)
 ES_INDEX_NAME = SITE_FLAVOR
 # ES hosts
-ES_HOSTS = ['localhost:9200']
+ES_HOSTS = ["localhost:9200"]
 
 ################
 ## Commenting ##
@@ -224,4 +226,4 @@ CACHE_THRESHOLD = 8192
 
 # To actually make this work across multiple worker processes, use redis
 # RATELIMIT_STORAGE_URL="redis://host:port"
-RATELIMIT_KEY_PREFIX="nyaaratelimit_"
+RATELIMIT_KEY_PREFIX = "nyaaratelimit_"

@@ -1,6 +1,6 @@
 import flask
 
-bp = flask.Blueprint('site', __name__)
+bp = flask.Blueprint("site", __name__)
 
 
 # @bp.route('/about', methods=['GET'])
@@ -8,21 +8,21 @@ bp = flask.Blueprint('site', __name__)
 #     return flask.render_template('about.html')
 
 
-@bp.route('/rules', methods=['GET'])
+@bp.route("/rules", methods=["GET"])
 def rules():
-    return flask.render_template('rules.html')
+    return flask.render_template("rules.html")
 
 
-@bp.route('/help', methods=['GET'])
+@bp.route("/help", methods=["GET"])
 def help():
-    return flask.render_template('help.html')
+    return flask.render_template("help.html")
 
 
-@bp.route('/xmlns/nyaa', methods=['GET'])
+@bp.route("/xmlns/nyaa", methods=["GET"])
 def xmlns_nyaa():
-    return flask.render_template('xmlns.html')
+    return flask.render_template("xmlns.html")
 
 
-@bp.route('/trusted', methods=['GET'])
+@bp.route("/trusted", methods=["GET"])
 def trusted():
-    return flask.render_template('trusted.html')
+    return flask.render_template("trusted.html")

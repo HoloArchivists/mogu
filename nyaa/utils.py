@@ -8,12 +8,12 @@ import flask
 
 
 def sha1_hash(input_bytes):
-    """ Hash given bytes with hashlib.sha1 and return the digest (as bytes) """
+    """Hash given bytes with hashlib.sha1 and return the digest (as bytes)"""
     return hashlib.sha1(input_bytes).digest()
 
 
 def sorted_pathdict(input_dict):
-    """ Sorts a parsed torrent filelist dict by alphabat, directories first """
+    """Sorts a parsed torrent filelist dict by alphabat, directories first"""
     directories = OrderedDict()
     files = OrderedDict()
 
@@ -29,7 +29,7 @@ def sorted_pathdict(input_dict):
 def random_string(length, charset=None):
     if charset is None:
         charset = string.ascii_letters + string.digits
-    return ''.join(random.choice(charset) for i in range(length))
+    return "".join(random.choice(charset) for i in range(length))
 
 
 def cached_function(f):
@@ -41,6 +41,7 @@ def cached_function(f):
         if f._cached_value is sentinel:
             f._cached_value = f(*args, **kwargs)
         return f._cached_value
+
     return decorator
 
 
@@ -71,9 +72,9 @@ def flatten_dict(d, result=None):
 
 
 def chain_get(source, *args):
-    ''' Tries to return values from source by the given keys.
-        Returns None if none match.
-        Note: can return a None from the source. '''
+    """Tries to return values from source by the given keys.
+    Returns None if none match.
+    Note: can return a None from the source."""
     sentinel = object()
     for key in args:
         value = source.get(key, sentinel)
@@ -89,4 +90,5 @@ def admin_only(f):
             return f(*args, **kwargs)
         else:
             flask.abort(401)
+
     return wrapper

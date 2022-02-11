@@ -9,11 +9,10 @@ USE_MYSQL = True
 
 
 class NyaaTestCase(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
-        app = create_app('config')
-        app.config['TESTING'] = True
+        app = create_app("config")
+        app.config["TESTING"] = True
         cls.app_context = app.app_context()
 
         # Use a separate database for testing

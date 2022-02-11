@@ -15,11 +15,13 @@ if not os.path.exists(outdir):
     os.makedirs(outdir)
 
 
-db = MySQLdb.connect(host='localhost',
-                     user='test',
-                     passwd='test123',
-                     db='nyaav2',
-                     cursorclass=MySQLdb.cursors.SSCursor)
+db = MySQLdb.connect(
+    host="localhost",
+    user="test",
+    passwd="test123",
+    db="nyaav2",
+    cursorclass=MySQLdb.cursors.SSCursor,
+)
 cur = db.cursor()
 
 cur.execute(
@@ -30,7 +32,10 @@ cur.execute(
         FROM
             {0}_torrents
         JOIN {0}_torrents_info ON torrent_id = id
-    """.format(prefix))
+    """.format(
+        prefix
+    )
+)
 
 for row in cur:
     id = row[0]
@@ -42,5 +47,5 @@ for row in cur:
         os.makedirs(path)
     path = os.path.join(path, info_hash)
 
-    with open(path, 'wb') as fp:
+    with open(path, "wb") as fp:
         fp.write(info_dict)
