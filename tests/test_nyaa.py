@@ -45,11 +45,6 @@ class NyaaTestCase(unittest.TestCase):
         rv = self.app.get("/login")
         assert b"Username or email address" in rv.data
 
-    def test_registration_url(self):
-        rv = self.app.get("/register")
-        assert b"Username" in rv.data
-        assert b"Password" in rv.data
-
 
 if __name__ == "__main__":
     unittest.main()
