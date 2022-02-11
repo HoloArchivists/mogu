@@ -100,7 +100,7 @@ def discord_callback():
     if not user:
         # Create the user.
         user = models.User(
-            username=user_name, email="user@holopirates.moe", password=""
+            username=user_name, email=f"{user_id}@holopirates.moe", password=""
         )
         user.id = user_id
         user.registration_ip = ip
