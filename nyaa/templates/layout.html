@@ -27,13 +27,44 @@
 		{# These are extracted here for the dark mode toggle #}
 		{% set bootstrap_light = static_cachebuster('css/bootstrap.min.css') %}
 		{% set bootstrap_dark = static_cachebuster('css/bootstrap-dark.min.css') %}
-		<link href="{{ bootstrap_light }}" rel="stylesheet" id="bsThemeLink">
+		<link href="{{ bootstrap_dark }}" rel="stylesheet" id="bsThemeLink">
 		<link href="{{ static_cachebuster('css/bootstrap-xl-mod.css') }}" rel="stylesheet">
 		<!--
 			This theme changer script needs to be inline and right under the above stylesheet link to prevent FOUC (Flash Of Unstyled Content)
 			Development version is commented out in static/js/main.js at the bottom of the file
 		-->
-		<script>function toggleDarkMode(){"dark"===localStorage.getItem("theme")?setThemeLight():setThemeDark()}function setThemeDark(){bsThemeLink.href="{{ bootstrap_dark }}",localStorage.setItem("theme","dark"),document.body!==null&&document.body.classList.add('dark')}function setThemeLight(){bsThemeLink.href="{{ bootstrap_light }}",localStorage.setItem("theme","light"),document.body!==null&&document.body.classList.remove('dark')}if("undefined"!=typeof Storage){var bsThemeLink=document.getElementById("bsThemeLink");"dark"===localStorage.getItem("theme")&&setThemeDark()}</script>
+		<script>
+            'use strict';
+            function toggleDarkMode() {
+              if ("dark" === localStorage.getItem("theme")) {
+                setThemeLight();
+              } else {
+                setThemeDark();
+              }
+            }
+            function setThemeDark() {
+              bsThemeLink.href = "{{ bootstrap_dark }}";
+              localStorage.setItem("theme", "dark");
+              if (document.body !== null) {
+                document.body.classList.add("dark");
+              }
+            }
+            function setThemeLight() {
+              bsThemeLink.href = "{{ bootstrap_light }}";
+              localStorage.setItem("theme", "light");
+              if (document.body !== null) {
+                document.body.classList.remove("dark");
+              }
+            }
+            if ("undefined" != typeof Storage) {
+              var bsThemeLink = document.getElementById("bsThemeLink");
+              if ("light" === localStorage.getItem("theme")) {
+                setThemeLight();
+              }else{
+                setThemeDark();
+              }
+            }
+        </script>
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/css/bootstrap-select.min.css" integrity="sha256-an4uqLnVJ2flr7w0U74xiF4PJjO2N5Df91R2CUmCLCA=" crossorigin="anonymous" />
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
 
