@@ -77,13 +77,27 @@ def get_category_id_map():
     return cat_id_map
 
 
+def _utf8_endswith(key):
+    if isinstance(key, str):
+        return key.endswith(".utf-8")
+    if isinstance(key, bytes):
+        return key.endswith(b".utf-8")
+    raise AssertionError("should not get here")
+
+def _utf8_replace(key):
+    if isinstance(key, str):
+        return key.replace(".utf-8", "")
+    if isinstance(key, bytes):
+        return key.replace(b".utf-8", b"")
+    raise AssertionError("should not get here")
+
 def _replace_utf8_values(dict_or_list):
     """Will replace 'property' with 'property.utf-8' and remove latter if it exists.
     Thanks, bitcomet! :/"""
     did_change = False
     if isinstance(dict_or_list, dict):
-        for key in [key for key in dict_or_list.keys() if key.endswith(".utf-8")]:
-            dict_or_list[key.replace(".utf-8", "")] = dict_or_list.pop(key)
+        for key in [key for key in dict_or_list.keys() if _utf8_endswith(key)]:
+            dict_or_list[_utf8_replace(key)] = dict_or_list.pop(key)
             did_change = True
         for value in dict_or_list.values():
             did_change = _replace_utf8_values(value) or did_change
@@ -255,9 +269,22 @@ def handle_torrent_upload(upload_form, uploading_user=None, fromAPI=False):
     information = sanitize_string(information)
     description = sanitize_string(description)
 
-    torrent_filesize = info_dict.get("length") or sum(
-        f["length"] for f in info_dict.get("files")
-    )
+    if info_dict.get("length"):
+        torrent_filesize = info_dict.get("length")
+    elif info_dict.get("files") is not None:
+        torrent_filesize = sum(
+            f["length"] for f in info_dict.get("files")
+        )
+    elif info_dict.get("file tree") is not None:
+        def compute_size(node):
+            size = 0
+            for k, v in node.items():
+                if k == b"":
+                    size += v.get("length")
+                else:
+                    size += compute_size(v)
+            return size
+        torrent_filesize = compute_size(info_dict.get("file tree"))
 
     # In case no encoding, assume UTF-8.
     torrent_encoding = torrent_data.torrent_dict.get("encoding", b"utf-8").decode(
@@ -267,6 +294,7 @@ def handle_torrent_upload(upload_form, uploading_user=None, fromAPI=False):
     torrent = models.Torrent(
         id=torrent_data.db_id,
         info_hash=torrent_data.info_hash,
+        info_hash_v1=torrent_data.info_hash_v1,
         display_name=display_name,
         torrent_name=torrent_data.filename,
         information=information,

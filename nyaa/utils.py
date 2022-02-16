@@ -12,6 +12,10 @@ def sha1_hash(input_bytes):
     return hashlib.sha1(input_bytes).digest()
 
 
+def sha256_hash(input_bytes):
+    """Hash given bytes with hashlib.sha256 and return the digest (as bytes)"""
+    return hashlib.sha256(input_bytes).digest()
+
 def sorted_pathdict(input_dict):
     """Sorts a parsed torrent filelist dict by alphabat, directories first"""
     directories = OrderedDict()

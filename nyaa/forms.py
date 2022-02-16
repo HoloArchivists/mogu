@@ -380,8 +380,8 @@ class UploadForm(FlaskForm):
         # This may result in a different hash if the uploaded torrent does not match the
         # spec, but it's their own fault for using broken software! Right?
         bencoded_info_dict = bencode.encode(torrent_dict["info"])
-        # TODO: sha256?
-        info_hash = utils.sha1_hash(bencoded_info_dict)
+        info_hash = b"\x12\x20" + utils.sha256_hash(bencoded_info_dict)
+        info_hash_v1 = utils.sha1_hash(bencoded_info_dict) if torrent_dict["info"].get("pieces") is not None else b"\x00"*20
 
         # Check if the info_hash exists already in the database
         existing_torrent = models.Torrent.by_info_hash(info_hash)
@@ -397,8 +397,8 @@ class UploadForm(FlaskForm):
         field.parsed_data = TorrentFileData(
             filename=os.path.basename(field.data.filename),
             torrent_dict=torrent_dict,
-            # TODO: save both v1 and v2 infohashes, generate hybrid/v2-only magnets
             info_hash=info_hash,
+            info_hash_v1=info_hash_v1,
             bencoded_info_dict=bencoded_info_dict,
             db_id=existing_torrent_id,
         )
@@ -551,8 +551,8 @@ def _validate_torrent_metadata(torrent_dict):
 
     if not is_v1 and not is_v2:
         raise AssertionError("torrent is neither V1 nor V2")
-    # if is_v1 and not is_hybrid:
-    #   raise AssertionError("Only V2 and hybrid torrents are allowed")
+    if is_v1 and not is_hybrid:
+        raise AssertionError("Only V2 and hybrid torrents are allowed")
 
     encoding_bytes = torrent_dict.get("encoding", b"utf-8")
     encoding = _validate_bytes(encoding_bytes, "encoding", test_decode="utf-8").lower()

@@ -75,9 +75,10 @@ def get_default_trackers():
 
     return list(trackers)
 
+null_info_hash_v1 = "0" * 40
 
 @functools.lru_cache(maxsize=1024 * 4)
-def _create_magnet(display_name, info_hash, max_trackers=5, trackers=None):
+def _create_magnet(display_name, info_hash, info_hash_v1, max_trackers=5, trackers=None):
     # Unless specified, we just use default trackers
     if trackers is None:
         trackers = get_default_trackers()
@@ -85,9 +86,21 @@ def _create_magnet(display_name, info_hash, max_trackers=5, trackers=None):
     magnet_parts = [("dn", display_name)]
     magnet_parts.extend(("tr", tracker_url) for tracker_url in trackers[:max_trackers])
 
+    if info_hash_v1 is None or info_hash_v1 == null_info_hash_v1:
+        return "".join(
+            [
+                "magnet:?xt=urn:btmh:",
+                info_hash,
+                "&",
+                urlencode(magnet_parts, quote_via=quote),
+            ]
+        )
+
     return "".join(
         [
             "magnet:?xt=urn:btih:",
+            info_hash_v1,
+            "&xt=urn:btmh:",
             info_hash,
             "&",
             urlencode(magnet_parts, quote_via=quote),
@@ -102,7 +115,11 @@ def create_magnet(torrent):
     if isinstance(info_hash, (bytes, bytearray)):
         info_hash = info_hash.hex()
 
-    return _create_magnet(torrent.display_name, info_hash)
+    info_hash_v1 = torrent.info_hash_v1
+    if isinstance(info_hash_v1, (bytes, bytearray)):
+        info_hash_v1 = info_hash_v1.hex()
+
+    return _create_magnet(torrent.display_name, info_hash, info_hash_v1)
 
 
 def create_default_metadata_base(torrent, trackers=None, webseeds=None):
