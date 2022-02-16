@@ -128,10 +128,10 @@ DISCORD_CLIENT_ID = "***"
 DISCORD_CLIENT_SECRET = "***"
 DISCORD_REDIRECT_URI = "http://localhost:5500/discord/oauth2/callback"
 DISCORD_GUILD = "***"  # Guild ID used for login verification
-DISCORD_ROLE_LOGIN = "***"  # Role ID for users who are allowed to login
-DISCORD_ROLE_TRUSTED = "***"  # Role ID for trusted users
-DISCORD_ROLE_MODERATOR = "***"  # Role ID for moderators
-DISCORD_ROLE_ADMIN = "***"  # Role ID for admin users
+DISCORD_ROLES_LOGIN = ["***"]  # Role ID for users who are allowed to login
+DISCORD_ROLES_TRUSTED = ["***"]  # Role ID for trusted users
+DISCORD_ROLES_MODERATOR = ["***"]  # Role ID for moderators
+DISCORD_ROLES_ADMIN = ["***"]  # Role ID for admin users
 
 #############
 ## Account ##

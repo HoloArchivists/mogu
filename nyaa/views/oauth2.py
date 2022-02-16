@@ -18,6 +18,14 @@ app = flask.current_app
 bp = flask.Blueprint("oauth2", __name__)
 
 
+def intersect(a, b):
+    return list(set(a) & set(b))
+
+
+def is_intersect(a, b):
+    return len(intersect(a, b)) > 0
+
+
 @bp.route("/discord/oauth2/callback")
 def discord_callback():
     """
@@ -81,13 +89,13 @@ def discord_callback():
         )
 
     user_roles = response["roles"]
-    role_login = app.config["DISCORD_ROLE_LOGIN"]
-    role_trusted = app.config["DISCORD_ROLE_TRUSTED"]
-    role_moderator = app.config["DISCORD_ROLE_MODERATOR"]
-    role_admin = app.config["DISCORD_ROLE_ADMIN"]
+    roles_login = app.config["DISCORD_ROLES_LOGIN"]
+    roles_trusted = app.config["DISCORD_ROLES_TRUSTED"]
+    roles_moderator = app.config["DISCORD_ROLES_MODERATOR"]
+    roles_admin = app.config["DISCORD_ROLES_ADMIN"]
 
     # Make sure user has at least the login role.
-    if not role_login in user_roles:
+    if not is_intersect(user_roles, roles_login):
         return flask.render_template(
             "error.html",
             message="You do not have the sufficient permissions to login. Contact an admin for more info.",
@@ -110,11 +118,11 @@ def discord_callback():
     user.last_login_date = datetime.utcnow()
     user.status = models.UserStatusType.ACTIVE
 
-    if role_admin in user_roles:
+    if is_intersect(user_roles, roles_admin):
         user.level = models.UserLevelType.SUPERADMIN
-    elif role_moderator in user_roles:
+    elif is_intersect(user_roles, roles_moderator):
         user.level = models.UserLevelType.MODERATOR
-    elif role_trusted in user_roles:
+    elif is_intersect(user_roles, roles_trusted):
         user.level = models.UserLevelType.TRUSTED
     else:
         user.level = models.UserLevelType.REGULAR
