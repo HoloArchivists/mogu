@@ -66,7 +66,8 @@
 					{% else %}
 					<a href="{{ url_for('main.home', c=cat_id) }}" title="{{ torrent.main_category.name }} - {{ torrent.sub_category.name }}">
 					{% endif %}
-						<img src="{{ url_for('static', filename='img/icons/%s/%s.png'|format(icon_dir, cat_id)) }}" alt="{{ category_name(cat_id) }}" class="category-icon">
+					{# <img src="{{ url_for('static', filename='img/icons/%s/%s.png'|format(icon_dir, cat_id)) }}" alt="{{ category_name(cat_id) }}" class="category-icon"> #}
+					{{ category_name(cat_id) }}
 					</a>
 				</td>
 				<td colspan="2">
