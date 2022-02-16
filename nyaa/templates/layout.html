@@ -125,11 +125,13 @@
 							</ul>
 						</li>
 						<li><a href="{% if rss_filter %}{{ url_for('main.home', page='rss', **rss_filter) }}{% else %}{{ url_for('main.home', page='rss') }}{% endif %}">RSS</a></li>
+						{#
 						{% if config.SITE_FLAVOR == 'nyaa' %}
 						<li><a href="//{{ config.EXTERNAL_URLS['fap'] }}">Yabe</a></li>
 						{% elif config.SITE_FLAVOR == 'sukebei' %}
 						<li><a href="//{{ config.EXTERNAL_URLS['main'] }}">Fun</a></li>
 						{% endif %}
+						#}
 						{% if g.user.is_moderator %}
 						<li class="dropdown">
 							<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
@@ -207,29 +209,16 @@
 						</li>
 						{% endif %}
 					</ul>
-					{% set nyaa_cats = [('1_0', 'Anime', 'Anime'),
-						('1_1', '- Anime Music Video', 'Anime - AMV'),
-						('1_2', '- English-translated', 'Anime - English'),
-						('1_3', '- Non-English-translated', 'Anime - Non-English'),
-						('1_4', '- Raw', 'Anime - Raw'),
-						('2_0', 'Audio', 'Audio'),
-						('2_1', '- Lossless', 'Audio - Lossless'),
-						('2_2', '- Lossy', 'Audio - Lossy'),
-						('3_0', 'Literature', 'Literature'),
-						('3_1', '- English-translated', 'Literature - English'),
-						('3_2', '- Non-English-translated', 'Literature - Non-English'),
-						('3_3', '- Raw', 'Literature - Raw'),
-						('4_0', 'Live Action', 'Live Action'),
-						('4_1', '- English-translated', 'Live Action - English'),
-						('4_2', '- Idol/Promotional Video', 'Live Action - Idol/PV'),
-						('4_3', '- Non-English-translated', 'Live Action - Non-English'),
-						('4_4', '- Raw', 'Live Action - Raw'),
-						('5_0', 'Pictures', 'Pictures'),
-						('5_1', '- Graphics', 'Pictures - Graphics'),
-						('5_2', '- Photos', 'Pictures - Photos'),
-						('6_0', 'Software', 'Software'),
-						('6_1', '- Applications', 'Software - Apps'),
-						('6_2', '- Games', 'Software - Games')]
+					{% set nyaa_cats = [('1_0', 'Unarchived', 'Unarchived'),
+						('1_1', '- Karaoke', 'Unarchived - Karaoke'),
+						('1_2', '- Copyright', 'Unarchived - Copyright'),
+						('1_3', '- Yab', 'Unarchived - Yab'),
+						('2_0', 'Paid', 'Paid'),
+						('2_1', '- Membership', 'Paid - Membership'),
+						('2_2', '- Voice pack', 'Paid - Voice pack'),
+						('2_3', '- Concert', 'Paid - Voice pack'),
+						('2_4', '- Songs', 'Paid - Songs'),
+						('2_5', '- Others', 'Paid - Others')]
 					%}
 
 					{% set suke_cats = [('1_0', 'Art', 'Art'),
