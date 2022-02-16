@@ -113,6 +113,16 @@
 				<div id="navbar" class="navbar-collapse collapse">
 					<ul class="nav navbar-nav">
 						<li {% if request.path == url_for('torrents.upload') %}class="active"{% endif %}><a href="{{ url_for('torrents.upload') }}">Upload</a></li>
+						{% if config.STICKY_TORRENTS %}
+						<li class="dropdown">
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Sticky Torrents<span class="caret"></span></a>
+							<ul class="dropdown-menu">
+								{% for torrent in config.STICKY_TORRENTS %}
+								<li><a href="{{ url_for('torrents.view', torrent_id=torrent.id) }}">{{ torrent.label }}</a></li>
+								{% endfor %}
+							</ul>
+						</li>
+						{% endif %}
 						<li class="dropdown">
 							<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
 								Info

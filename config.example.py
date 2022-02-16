@@ -133,6 +133,12 @@ DISCORD_ROLES_TRUSTED = ["***"]  # Role ID for trusted users
 DISCORD_ROLES_MODERATOR = ["***"]  # Role ID for moderators
 DISCORD_ROLES_ADMIN = ["***"]  # Role ID for admin users
 
+#####################
+## Sticky Torrents ##
+#####################
+
+STICKY_TORRENTS = None  # [{"label": "Display Name", "id": "1"}]
+
 #############
 ## Account ##
 #############
