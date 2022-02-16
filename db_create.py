@@ -7,23 +7,8 @@ from nyaa.extensions import db
 app = create_app("config")
 
 NYAA_CATEGORIES = [
-    (
-        "Anime",
-        ["Anime Music Video", "English-translated", "Non-English-translated", "Raw"],
-    ),
-    ("Audio", ["Lossless", "Lossy"]),
-    ("Literature", ["English-translated", "Non-English-translated", "Raw"]),
-    (
-        "Live Action",
-        [
-            "English-translated",
-            "Idol/Promotional Video",
-            "Non-English-translated",
-            "Raw",
-        ],
-    ),
-    ("Pictures", ["Graphics", "Photos"]),
-    ("Software", ["Applications", "Games"]),
+    ("Unarchived", ["Karaoke", "Copyright", "Yab"]),
+    ("Paid", ["Membership", "Voice pack", "Concert", "Songs", "Others"]),
 ]
 
 
