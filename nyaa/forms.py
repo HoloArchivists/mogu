@@ -380,6 +380,7 @@ class UploadForm(FlaskForm):
         # This may result in a different hash if the uploaded torrent does not match the
         # spec, but it's their own fault for using broken software! Right?
         bencoded_info_dict = bencode.encode(torrent_dict["info"])
+        # TODO: sha256?
         info_hash = utils.sha1_hash(bencoded_info_dict)
 
         # Check if the info_hash exists already in the database
@@ -396,6 +397,7 @@ class UploadForm(FlaskForm):
         field.parsed_data = TorrentFileData(
             filename=os.path.basename(field.data.filename),
             torrent_dict=torrent_dict,
+            # TODO: save both v1 and v2 infohashes, generate hybrid/v2-only magnets
             info_hash=info_hash,
             bencoded_info_dict=bencoded_info_dict,
             db_id=existing_torrent_id,
@@ -543,6 +545,15 @@ def _validate_torrent_metadata(torrent_dict):
     assert info_dict is not None, "no info_dict in torrent"
     assert isinstance(info_dict, dict), "info is not a dict"
 
+    is_v1 = info_dict.get("pieces") is not None
+    is_v2 = info_dict.get("file tree") is not None
+    is_hybrid = is_v1 and is_v2
+
+    if not is_v1 and not is_v2:
+        raise AssertionError("torrent is neither V1 nor V2")
+    # if is_v1 and not is_hybrid:
+    #   raise AssertionError("Only V2 and hybrid torrents are allowed")
+
     encoding_bytes = torrent_dict.get("encoding", b"utf-8")
     encoding = _validate_bytes(encoding_bytes, "encoding", test_decode="utf-8").lower()
 
@@ -552,31 +563,50 @@ def _validate_torrent_metadata(torrent_dict):
     piece_length = info_dict.get("piece length")
     _validate_number(piece_length, "piece length", check_positive=True)
 
-    pieces = info_dict.get("pieces")
-    _validate_bytes(pieces, "pieces")
-    assert len(pieces) % 20 == 0, "pieces length is not a multiple of 20"
+    file_tree = {}
+    if is_v1:
+        pieces = info_dict.get("pieces")
+        _validate_bytes(pieces, "pieces")
+        assert len(pieces) % 20 == 0, "pieces length is not a multiple of 20"
 
-    files = info_dict.get("files")
-    if files is not None:
-        _validate_list(files, "filelist")
+        files = info_dict.get("files")
+        if files is not None:
+            _validate_list(files, "filelist")
 
-        for file_dict in files:
-            file_length = file_dict.get("length")
-            _validate_number(file_length, "file length", check_positive_or_zero=True)
+            for file_dict in files:
+                file_length = file_dict.get("length")
+                _validate_number(file_length, "file length", check_positive_or_zero=True)
 
-            path_list = file_dict.get("path")
-            _validate_list(path_list, "path")
-            # Validate possible directory names
-            for path_part in path_list[:-1]:
-                _validate_bytes(path_part, "path part", test_decode=encoding)
-            # Validate actual filename, allow b'' to specify an empty directory
-            _validate_bytes(
-                path_list[-1], "filename", check_empty=False, test_decode=encoding
-            )
-
-    else:
-        length = info_dict.get("length")
-        _validate_number(length, "length", check_positive=True)
+                path_list = file_dict.get("path")
+                _validate_list(path_list, "path")
+                # Validate possible directory names
+                for path_part in path_list[:-1]:
+                    _validate_bytes(path_part, "path part", test_decode=encoding)
+                # Validate actual filename, allow b'' to specify an empty directory
+                _validate_bytes(
+                    path_list[-1], "filename", check_empty=False, test_decode=encoding
+                )
+                file_tree[b"/".join(path_list)] = {
+                        "attr": file_dict.get("attr"),
+                        "length": file_length
+                }
+        else:
+            length = info_dict.get("length")
+            _validate_number(length, "length", check_positive=True)
+    if is_v2:
+        def validate_v2(prefix, tree_node):
+            for k, v in tree_node.items():
+                assert isinstance(v, dict), "tree node is not a dict"
+                if k == b"":
+                    exist = file_tree.get("/".join(prefix).encode())
+                    if exist:
+                        assert exist["attr"] == v.get("attr"), "attribute mismatch between V1 and V2"
+                        assert exist["length"] == v.get("length"), "length mismatch between V1 and V2"
+                else:
+                    validate_v2(prefix + [k], v)
+        merkle_tree = info_dict.get("file tree")
+        assert isinstance(merkle_tree, dict), "file tree is not a dict"
+        validate_v2([], merkle_tree)
 
     _validate_webseeds(torrent_dict)
 
