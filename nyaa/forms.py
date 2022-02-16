@@ -603,6 +603,8 @@ def _validate_torrent_metadata(torrent_dict):
             for k, v in tree_node.items():
                 assert isinstance(v, dict), "tree node is not a dict"
                 if k == b"":
+                    file_length = v.get("length")
+                    _validate_number(file_length, "file length", check_positive_or_zero=True)
                     if is_hybrid:
                         tree_key = "/".join(prefix).encode()
                         exist = file_tree.get(tree_key)
