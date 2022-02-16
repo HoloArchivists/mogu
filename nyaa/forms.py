@@ -563,6 +563,11 @@ def _validate_torrent_metadata(torrent_dict):
     piece_length = info_dict.get("piece length")
     _validate_number(piece_length, "piece length", check_positive=True)
 
+    # Stores [file path]: { attr, length }
+    # Only used for hybrid torrents, first by adding all files from the V1 metadata,
+    # then for each file in the V2 metadata, if no entry exists or the attr/length fields
+    # differ, there's a mismatch. After processing the V2 metadata, if the dict is not
+    # empty, there's a mismatch.
     file_tree = {}
     if is_v1:
         pieces = info_dict.get("pieces")
@@ -598,15 +603,21 @@ def _validate_torrent_metadata(torrent_dict):
             for k, v in tree_node.items():
                 assert isinstance(v, dict), "tree node is not a dict"
                 if k == b"":
-                    exist = file_tree.get("/".join(prefix).encode())
-                    if exist:
+                    if is_hybrid:
+                        tree_key = "/".join(prefix).encode()
+                        exist = file_tree.get(tree_key)
+                        assert isinstance(exist, dict), "v2 metadata has files not in v1"
                         assert exist["attr"] == v.get("attr"), "attribute mismatch between V1 and V2"
                         assert exist["length"] == v.get("length"), "length mismatch between V1 and V2"
+                        file_tree.pop(tree_key)
                 else:
                     validate_v2(prefix + [k], v)
         merkle_tree = info_dict.get("file tree")
         assert isinstance(merkle_tree, dict), "file tree is not a dict"
         validate_v2([], merkle_tree)
+
+    # If it's a hybrid torrent, the length of the dict must be zero
+    assert not is_hybrid or len(file_tree) == 0, "v1 metadata has files not in v2"
 
     _validate_webseeds(torrent_dict)
 
