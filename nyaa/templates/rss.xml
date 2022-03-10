@@ -1,4 +1,4 @@
-<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:nyaa="{{ url_for('site.xmlns_nyaa', _external=True) }}" version="2.0">
+<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:mogu="{{ url_for('site.xmlns_mogu', _external=True) }}" version="2.0">
 	<channel>
 		<title>{{ config.SITE_NAME }} - {{ term }} - {% if not magnet_links %}Torrent File{% else %}Magnet URI{% endif %} RSS</title>
 		<description>RSS Feed for {{ term }}</description>
@@ -17,10 +17,13 @@
 				<guid isPermaLink="true">{{ url_for('torrents.view', torrent_id=torrent.meta.id, _external=True) }}</guid>
 				<pubDate>{{ torrent.created_time|rfc822_es }}</pubDate>
 
-				<nyaa:seeders>  {{- torrent.seed_count     }}</nyaa:seeders>
-				<nyaa:leechers> {{- torrent.leech_count    }}</nyaa:leechers>
-				<nyaa:downloads>{{- torrent.download_count }}</nyaa:downloads>
-				<nyaa:infoHash> {{- torrent.info_hash      }}</nyaa:infoHash>
+				<mogu:seeders>  {{- torrent.seed_count     }}</mogu:seeders>
+				<mogu:leechers> {{- torrent.leech_count    }}</mogu:leechers>
+                <mogu:downloads>{{- torrent.download_count }}</mogu:downloads>
+                <mogu:infoHash> {{- torrent.info_hash      }}</mogu:infoHash>
+                {% if torrent.info_hash_v1 != "0" * 40 %}
+                <mogu:infoHashV1> {{- torrent.info_hash_v1 }} </mogu:infoHashV1>
+                {% endif %}
 			{% else %}
 				{# Database Torrent rows #}
 				{% if torrent.has_torrent and not magnet_links %}
@@ -31,18 +34,21 @@
 				<guid isPermaLink="true">{{ url_for('torrents.view', torrent_id=torrent.id, _external=True) }}</guid>
 				<pubDate>{{ torrent.created_time|rfc822 }}</pubDate>
 
-				<nyaa:seeders>  {{- torrent.stats.seed_count     }}</nyaa:seeders>
-				<nyaa:leechers> {{- torrent.stats.leech_count    }}</nyaa:leechers>
-				<nyaa:downloads>{{- torrent.stats.download_count }}</nyaa:downloads>
-				<nyaa:infoHash> {{- torrent.info_hash_as_hex     }}</nyaa:infoHash>
+				<mogu:seeders>  {{- torrent.stats.seed_count      }}</mogu:seeders>
+				<mogu:leechers> {{- torrent.stats.leech_count     }}</mogu:leechers>
+				<mogu:downloads>{{- torrent.stats.download_count  }}</mogu:downloads>
+                <mogu:infoHash> {{- torrent.info_hash_as_hex      }}</mogu:infoHash>
+                {% if torrent.info_hash_v1_as_hex != "0" * 40 %}
+                <mogu:infoHashV1> {{- torrent.info_hash_v1_as_hex }}</mogu:infoHashV1>
+                {% endif %}
 			{% endif %}
 			{% set cat_id = use_elastic and ((torrent.main_category_id|string) + '_' + (torrent.sub_category_id|string)) or torrent.sub_category.id_as_string %}
-			<nyaa:categoryId>{{- cat_id }}</nyaa:categoryId>
-			<nyaa:category>  {{- category_name(cat_id) }}</nyaa:category>
-			<nyaa:size>      {{- torrent.filesize | filesizeformat(True) }}</nyaa:size>
-			<nyaa:comments>  {{- torrent.comment_count }}</nyaa:comments>
-			<nyaa:trusted>   {{- torrent.trusted and 'Yes' or 'No' }}</nyaa:trusted>
-			<nyaa:remake>    {{- torrent.remake  and 'Yes' or 'No' }}</nyaa:remake>
+			<mogu:categoryId>{{- cat_id }}</mogu:categoryId>
+			<mogu:category>  {{- category_name(cat_id) }}</mogu:category>
+			<mogu:size>      {{- torrent.filesize | filesizeformat(True) }}</mogu:size>
+			<mogu:comments>  {{- torrent.comment_count }}</mogu:comments>
+			<mogu:trusted>   {{- torrent.trusted and 'Yes' or 'No' }}</mogu:trusted>
+			<mogu:remake>    {{- torrent.remake  and 'Yes' or 'No' }}</mogu:remake>
 			{% set torrent_id = use_elastic and torrent.meta.id or torrent.id %}
 			<description><![CDATA[<a href="{{ url_for('torrents.view', torrent_id=torrent_id, _external=True) }}">#{{ torrent_id }} | {{ torrent.display_name }}</a> | {{ torrent.filesize | filesizeformat(True) }} | {{ category_name(cat_id) }} | {{ use_elastic and torrent.info_hash or torrent.info_hash_as_hex | upper }}]]></description>
 		</item>

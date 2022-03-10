@@ -112,8 +112,13 @@ class TorrentBase(DeclarativeHelperBase):
     __tablename_base__ = "torrents"
 
     id = db.Column(db.Integer, primary_key=True)
+    # 2 extra bytes for 0x12 0x20 prefix
     info_hash = db.Column(
-        BinaryType(length=20), unique=True, nullable=False, index=True
+        BinaryType(length=34), unique=True, nullable=False, index=True
+    )
+    # all 0s if it's a v2-only torrent
+    info_hash_v1 = db.Column(
+        BinaryType(length=20), nullable=True
     )
     display_name = db.Column(
         db.String(length=255, collation=COL_UTF8_GENERAL_CI), nullable=False, index=True
@@ -308,6 +313,10 @@ class TorrentBase(DeclarativeHelperBase):
     @property
     def info_hash_as_hex(self):
         return self.info_hash.hex()
+
+    @property
+    def info_hash_v1_as_hex(self):
+        return self.info_hash_v1.hex()
 
     @property
     def magnet_uri(self):

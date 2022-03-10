@@ -18,8 +18,8 @@ def help():
     return flask.render_template("help.html")
 
 
-@bp.route("/xmlns/nyaa", methods=["GET"])
-def xmlns_nyaa():
+@bp.route("/xmlns/mogu", methods=["GET"])
+def xmlns_mogu():
     return flask.render_template("xmlns.html")
 
 
