@@ -1,6 +1,6 @@
 # Mogu!
 
-This is a fork of [Nyaa](https://github.com/nyaadevs/nyaa) for ***REMOVED***.
+This is a fork of [Nyaa](https://github.com/nyaadevs/nyaa).
 
 ## Setting up for development
 
