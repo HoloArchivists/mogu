@@ -1,5 +1,10 @@
 # Mogu!
 
+> [!WARNING]
+> **This repository is deprecated and archived.** Mogu has been rewritten in ASP.NET Core and now
+> lives at **[HoloArchivists/mogu.net](https://github.com/HoloArchivists/mogu.net)**, which is what runs
+> on mogu.holopirates.moe. This Python version is no longer maintained.
+
 This is a fork of [Nyaa](https://github.com/nyaadevs/nyaa).
 
 ## Setting up for development
